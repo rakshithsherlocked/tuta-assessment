@@ -18,7 +18,7 @@ function validateURL(url) {
 function mockAPICall(url) {
     return new Promise((resolve) => {
         setTimeout(() => {
-            if(urlsDB.includes(url)){
+            if (urlsDB.includes(url)) {
                 const checkURL = new URL(url);
                 const pathname = checkURL.pathname;
                 const segments = pathname.split('/');
@@ -26,12 +26,12 @@ function mockAPICall(url) {
                 const extension = filename.split('.').pop();
                 if (fileExtensions.includes(extension)) {
                     resolve({ exists: true, type: "file" })
-                }else if (pathname.endsWith('/')) {
+                } else if (pathname.endsWith('/')) {
                     resolve({ exists: true, type: "folder" })
-                }else{
+                } else {
                     resolve({ exists: false });
                 }
-            }else{
+            } else {
                 resolve({ exists: false });
             }
         }, 800);
@@ -40,21 +40,21 @@ function mockAPICall(url) {
 
 function debounce(func, delay) {
     let timer;
-    return function(...args){
+    return function (...args) {
         clearTimeout(timer);
         timer = setTimeout(() => func.apply(this, args), delay);
     }
 }
 
-function setResult(message, className){
+function setResult(message, className) {
     result.textContent = message;
     result.className = `result ${className || ''}`;
 }
 
 const debouncedCheckURL = debounce(async (url) => {
     if (url !== newUrl) return;
-    setResult('Checking URL...', 'loading');
     const response = await mockAPICall(url);
+    if (url !== newUrl) return;
     if (response.exists) {
         if (response.type === "folder") {
             setResult('The URL points to a valid folder.', 'success');
@@ -71,14 +71,14 @@ let newUrl = ""
 input.addEventListener('input', (e) => {
     const url = e.target.value.trim();
     newUrl = url
-    if(!url){
+    if (!url) {
         setResult('');
         return;
     }
-
-    if(!validateURL(url)){
+    if (!validateURL(url)) {
         setResult('Invalid URL format.', 'error');
         return;
     }
+    setResult('Checking URL...', 'loading');
     debouncedCheckURL(url);
 })
